@@ -1,6 +1,4 @@
-﻿
-
-# Kerwin Directory
+﻿# Kerwin Directory
 
 Kerwin Directory 是一个开源的目录管理工具.
 
@@ -10,17 +8,6 @@ Kerwin Directory 是一个开源的目录管理工具.
 
 没错是跟`directory lister`差不多，我就是按照这个写的，看了一下`directory lister`没有对某个目录或者某个文件加密的操作，所以就想自己写个
 
-## 目录
-
-* [Windows](#Windows下部署)
-    * [IIS部署](#IIS部署)
-        * [安装IIS](#安装IIS)
-        * [安装 .net core sdk](#安装-.net-core-sdk)
-        * [配置站点](#配置站点)
-        * [设置应用程序池](#设置应用程序池)
-    * [Nginx部署](#Windows-or-Nginx)
-* [Linux](#Linux部署)
-    * [Nginx部署](#Windows-or-Nginx)
 
 ## Windows部署
 

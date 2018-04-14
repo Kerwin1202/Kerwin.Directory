@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <title>只为资源站 @Html.Raw(querys.Count > 0 ? querys[querys.Count - 1] : "")</title>
+    <title>@(ConfigSettings.SiteName) @Html.Raw(querys.Count > 0 ? querys[querys.Count - 1] : "")</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -176,7 +176,7 @@
 
         <hr />
         <footer>
-            <p>&copy; 2018 - 只为资源站</p>
+            <p>&copy; @(DateTime.Now.Year) - @(ConfigSettings.SiteName)</p>
         </footer>
     </div>
 

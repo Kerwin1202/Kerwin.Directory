@@ -17,6 +17,11 @@ namespace Kerwin.Directory.Web.Models
         public static string RootDir { get; set; } = @"h:\";
 
         /// <summary>
+        /// 
+        /// </summary>
+        public static string SiteName => "只为资源站";
+
+        /// <summary>
         /// 下载文件请求的目录  只对静态文件有用,,如果是下载目录此设置无效
         /// </summary>
         public static string DownloadRequestVirtualDir { get; set; } = "static";
