@@ -85,6 +85,12 @@
     </nav>
     <div class="container body-content">
         <div class="zy-main">
+            @if (ConfigSettings.IsShowAnnouncement)
+            {
+                <div class="zy-announcement">
+                    <p style="margin: 0;"><strong>公告：</strong>加密密码<code> kerwin.cn </code>!</p>
+                </div>
+            }
             <ul class="zy-fi-list">
                 <li class="zy-link zy-clearfix">
                     <div class="row">
@@ -122,7 +128,8 @@
                     }
                     else
                     {
-                        target = "target='_blank'"; url = $"/static{fileInfo.FileVirtualPath}";
+                        target = "target='_blank'";
+                        url = $"/{ConfigSettings.DownloadRequestVirtualDir}{fileInfo.FileVirtualPath}";
                     }
                     <li class="zy-link zy-clearfix">
                         <a @Html.Raw(target) href="@(url)">
@@ -158,7 +165,7 @@
                                     }
                                 </div>
                                 <div class="col-md-3 col-sm-4 hidden-xs text-right">
-                                    @fileInfo.LastModifiedTime.ToString("yyyy-MM-dd HH:mm:ss")
+                                    @fileInfo.LastModifiedTime.ToString(ConfigSettings.DateFormatter)
                                 </div>
                             </div>
                         </a>

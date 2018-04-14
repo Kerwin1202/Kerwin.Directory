@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using Kerwin.Directory.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace Kerwin.Directory.Web.Controllers
         [Route("")]
         public IActionResult Index(string dir)
         {
-            var rootDir = @"d:\";
+            var rootDir = ConfigSettings.RootDir;
             var baseVirtualDir = dir ?? "";
             var baseDir = Path.Combine(rootDir, baseVirtualDir.TrimLine());
             if (string.IsNullOrWhiteSpace(baseDir) || !baseDir.StartsWith(rootDir))
@@ -25,7 +26,7 @@ namespace Kerwin.Directory.Web.Controllers
             {
                 return Redirect("/");
             }
-            var mask = FileAttributes.Hidden | FileAttributes.System;
+            var mask = ConfigSettings.IsShowHidden ? FileAttributes.System : FileAttributes.Hidden | FileAttributes.System;
 
             var di = new DirectoryInfo(baseDir);
 
@@ -38,6 +39,10 @@ namespace Kerwin.Directory.Web.Controllers
             var fms = new List<FileInfoModel>();
             foreach (var d in dirs)
             {
+                if (ConfigSettings.HiddenFileRules.FirstOrDefault(r => new Regex(r).IsMatch(d.Name)) != null)
+                {
+                    continue;
+                }
                 fms.Add(new FileInfoModel()
                 {
                     FileName = d.Name,
@@ -50,6 +55,10 @@ namespace Kerwin.Directory.Web.Controllers
 
             foreach (var file in files)
             {
+                if (ConfigSettings.HiddenFileRules.FirstOrDefault(r => new Regex(r).IsMatch(file.Name)) != null)
+                {
+                    continue;
+                }
                 fms.Add(new FileInfoModel()
                 {
                     FileName = file.Name,

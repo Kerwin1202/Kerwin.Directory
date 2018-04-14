@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Kerwin.Directory.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -45,8 +46,8 @@ namespace Kerwin.Directory.Web
             {
                 ServeUnknownFileTypes = true,
                 DefaultContentType = "application/octet-stream",
-                FileProvider = new PhysicalFileProvider(@"D:\"),
-                RequestPath = "/static",
+                FileProvider = new PhysicalFileProvider(ConfigSettings.RootDir),
+                RequestPath = "/" + ConfigSettings.DownloadRequestVirtualDir,
             });
 
             app.UseMvc(routes =>
