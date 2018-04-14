@@ -1,0 +1,197 @@
+﻿@using System.Web
+@using Kerwin.Directory.Web.Models
+@model List<Kerwin.Directory.Web.Models.FileInfoModel>
+@{
+    Layout = null;
+    var parentDir = ViewBag.ParentDir == null ? "/" : ViewBag.ParentDir;
+    var parmam = ViewBag.Parmas == null ? "" : ViewBag.Parmas;
+    var querys = ViewBag.Querys as List<string> ?? new List<string>();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>只为资源站 @Html.Raw(querys.Count > 0 ? querys[querys.Count - 1] : "")</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/main.css" />
+        <link href="~/css/icon.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+        <link href="~/css/icon.min.css" rel="stylesheet" />
+    </environment>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <p class="navbar-text">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">只为资源站</a>
+                    @for (int i = 0; i < querys.Count; i++)
+                    {
+                        var query = "";
+                        for (int j = 0; j <= i; j++)
+                        {
+                            query += "/" + HttpUtility.UrlEncode(querys[j]);
+                        }
+                        <span class="divider zy-xs-hide">/</span>
+                        if (i == querys.Count - 1)
+                        {
+                            <span class="zy-xs-hide">@(querys[querys.Count - 1])</span>
+                        }
+                        else
+                        {
+                            <a class="zy-xs-hide" href="/?dir=@(query)">@(querys[i])</a>
+                        }
+                    }
+                </p>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav zy-bg-hide">
+                    @for (int i = 0; i < querys.Count; i++)
+                    {
+                        var query = "";
+                        for (int j = 0; j <= i; j++)
+                        {
+                            query += "/" + querys[j];
+                        }
+                        if (i == querys.Count - 1)
+                        {
+                            <li><a>@(querys[i])</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="/?dir=@(query)">@(querys[i])</a></li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        <div class="zy-main">
+            <ul class="zy-fi-list">
+                <li class="zy-link zy-clearfix">
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6 col-xs-9 zy-fi-fn">
+                            文件
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-3 text-right">
+                            大小
+                        </div>
+                        <div class="col-md-3 col-sm-4 hidden-xs text-right">
+                            修改时间
+                        </div>
+                    </div>
+                </li>
+                <li class="zy-link zy-clearfix">
+                    @if (!string.IsNullOrWhiteSpace(parmam))
+                    {
+                        <a href="@(parentDir == "/" ? "/" : "/?dir=" + parentDir)">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <i class="iconfont icon-level-up"></i>
+                                    ...
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </li>
+                @foreach (FileInfoModel fileInfo in Model)
+                {
+                    string target, url;
+                    if (fileInfo.FileType == FileType.Directory)
+                    {
+                        target = "";
+                        url = $"/?dir={fileInfo.FileVirtualPath}";
+                    }
+                    else
+                    {
+                        target = "target='_blank'"; url = $"/static{fileInfo.FileVirtualPath}";
+                    }
+                    <li class="zy-link zy-clearfix">
+                        <a @Html.Raw(target) href="@(url)">
+                            <div class="row">
+                                <div class="col-md-7 col-sm-6 col-xs-9 zy-fi-fn">
+                                    <i class="iconfont @(fileInfo.Icon)"></i>
+                                    @fileInfo.FileName
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-3 text-right">
+                                    @if (fileInfo.FileType == FileType.Directory)
+                                    {
+                                        @Html.Raw("-")
+                                    }
+                                    else if (fileInfo.Size > 1099511627776)
+                                    {
+                                        @Html.Raw((fileInfo.Size / 1099511627776).ToString("f2") + "TB")
+                                    }
+                                    else if (fileInfo.Size > 1073741824)
+                                    {
+                                        @Html.Raw((fileInfo.Size / 1073741824).ToString("f2") + "GB")
+                                    }
+                                    else if (fileInfo.Size > 1048576)
+                                    {
+                                        @Html.Raw((fileInfo.Size / 1048576).ToString("f2") + "MB")
+                                    }
+                                    else if (fileInfo.Size > 1024)
+                                    {
+                                        @Html.Raw((fileInfo.Size / 1024).ToString("f2") + "KB")
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(fileInfo.Size + "B")
+                                    }
+                                </div>
+                                <div class="col-md-3 col-sm-4 hidden-xs text-right">
+                                    @fileInfo.LastModifiedTime.ToString("yyyy-MM-dd HH:mm:ss")
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <hr />
+        <footer>
+            <p>&copy; 2018 - 只为资源站</p>
+        </footer>
+    </div>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+</body>
+</html>
