@@ -1,4 +1,4 @@
-﻿# Kerwin Directory
+# Kerwin Directory
 
 Kerwin Directory 是一个开源的目录管理工具.
 
