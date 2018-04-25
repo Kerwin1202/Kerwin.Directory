@@ -1,4 +1,4 @@
-namespace Kerwin.Directory.Web.Models
+namespace Kerwin.Directory.Web.Models.Utils
 {
     public class ErrorViewModel
     {

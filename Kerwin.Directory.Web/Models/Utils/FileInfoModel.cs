@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kerwin.Directory.Web.Models
+namespace Kerwin.Directory.Web.Models.Utils
 {
     public class FileInfoModel
     {
@@ -23,18 +23,5 @@ namespace Kerwin.Directory.Web.Models
         Directory = 0,
 
         File = 1,
-    }
-
-    public static class StringExtended
-    {
-        public static string TrimLine(this string inputStr)
-        {
-            return inputStr.Trim('/').Trim('\\');
-        }
-
-        public static string ToDirFormatter(this string inputStr)
-        {
-            return inputStr.Replace("\\", "/");
-        }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using Kerwin.Directory.Web.Models;
+using Kerwin.Directory.Web.Models.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -24,6 +24,8 @@ namespace Kerwin.Directory.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +43,9 @@ namespace Kerwin.Directory.Web
 
             app.UseStaticFiles();
 
+            app.UseSession();
+
+
             //提供static下载
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -48,6 +53,7 @@ namespace Kerwin.Directory.Web
                 DefaultContentType = "application/octet-stream",
                 FileProvider = new PhysicalFileProvider(ConfigSettings.RootDir),
                 RequestPath = "/" + ConfigSettings.DownloadRequestVirtualDir,
+                OnPrepareResponse = OnPrepareResponse
             });
 
             app.UseMvc(routes =>
@@ -56,6 +62,30 @@ namespace Kerwin.Directory.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void OnPrepareResponse(StaticFileResponseContext staticFileResponseContext)
+        {
+            var filePath = staticFileResponseContext.File.PhysicalPath;
+
+            var token = staticFileResponseContext.Context.Request.Query.ContainsKey("token")
+                ? staticFileResponseContext.Context.Request.Query["token"].ToString()
+                : "";
+            var expiredTime = staticFileResponseContext.Context.Request.Query.ContainsKey("expiredtime")
+                ? Convert.ToDateTime(staticFileResponseContext.Context.Request.Query["expiredtime"].ToString())
+                : DateTime.Now.AddMinutes(-1);
+
+            var virtualPath = filePath.ToVirtualPath(ConfigSettings.RootDir);
+
+            if (expiredTime >= DateTime.Now && virtualPath.CheckDlToken(expiredTime, token))
+            {
+                //有权限下载
+            }
+            else if (!AppSettings.AllowAccessPath(filePath, out var needPwd))
+            {
+                //需要密码
+                staticFileResponseContext.Context.Response.Redirect("/?dir=" + virtualPath);
+            }
         }
     }
 }

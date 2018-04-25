@@ -11,7 +11,7 @@ namespace Kerwin.Directory.Web.Models
         public static bool IsShowHidden { get; set; } = false;
 
         /// <summary>
-        /// Root dir
+        /// Root dir     linux like "/root/"
         /// 根目录 实际文件所在的目录
         /// </summary>
         public static string RootDir { get; set; } = @"h:\";
@@ -72,18 +72,23 @@ namespace Kerwin.Directory.Web.Models
         ///// </summary>
         //public static List<string> NotAllowedDownloadDirs { get; set; } = new List<string>();
 
-        ///// <summary>
-        ///// When this is not empty all directories or files require password access
-        ///// </summary>
-        //public static string PasswordForAccess { get; set; }
+        /// <summary>
+        /// When this is not empty all directories or files require password access, Highest priority  PasswordAccessPaths Is invalid
+        /// 如果不为空 则所有访问都需要密码 优先级最高 PasswordAccessPaths 则无效
+        /// </summary>
+        public static string PasswordForAccess { get; set; } = "";
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //public static Dictionary<string, string> PasswordAccessPaths { get; set; } = new Dictionary<string, string>()
-        //{
-
-        //};
+        /// <summary>
+        /// Virtual path correspondence Password collection Case sensitivity because of the distinction in linux
+        /// 虚拟路径 对应 密码集合  区分大小写 因为linux中区分
+        /// </summary>
+        public static Dictionary<string, string> PasswordAccessPaths { get; set; } = new Dictionary<string, string>()
+        {
+            //{"/desktop","123456" },
+            //{"/Projects/Kerwin","456" }, //两个密码无法相互访问
+            //{"/Projects","123" },
+            //{"/server/projects/dll","123654" }
+        };
 
         //public static string Name { get; set; } = "admin";
 
@@ -98,6 +103,16 @@ namespace Kerwin.Directory.Web.Models
         /// 是否显示公告
         /// </summary>
         public static bool IsShowAnnouncement { get; set; } = true;
+
+        /// <summary>
+        /// 生成的下载链接下载过期时间
+        /// </summary>
+        public static int ShareDownloadExpiredMin { get; set; } = 30;
+
+        /// <summary>
+        /// 下载加密的盐 主要是生产下载链接过期时间所用的盐 需要修改，否则人人一样
+        /// </summary>
+        public static string DownloadTokenSalt { get; set; } = "Kerwin.Directory";
 
     }
 }

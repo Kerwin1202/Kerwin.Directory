@@ -1,19 +1,29 @@
-﻿<!DOCTYPE html>
+﻿@using Kerwin.Directory.Web.Models
+@using Kerwin.Directory.Web.Models.Utils
+@{
+    Layout = null;
+    var querys = ViewBag.Querys as List<string> ?? new List<string>();
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>只为资源站 - @ViewData["Title"]</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>@(ConfigSettings.SiteName) @Html.Raw(querys.Count > 0 ? querys[querys.Count - 1] : "")</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/main.css" />
+        <link href="~/css/icon.css" rel="stylesheet" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+        <link href="~/css/icon.min.css" rel="stylesheet" />
     </environment>
 </head>
 <body>
@@ -28,30 +38,53 @@
                 </button>
                 <p class="navbar-text">
                     <a asp-area="" asp-controller="Home" asp-action="Index">只为资源站</a>
-                    <span class="divider zy-xs-hide">/</span>
-                    <a class=" zy-xs-hide" href="http://storage.liyuans.com/?dir=05.%E9%9F%B3%E4%B9%90">Home</a>
-                    <span class="divider zy-xs-hide">/</span>
-                    <a class=" zy-xs-hide" href="http://storage.liyuans.com/?dir=05.%E9%9F%B3%E4%B9%90%2F%E6%A9%98%E7%BA%B8">About</a>
-                    <span class="divider zy-xs-hide">/</span>
-                    <a class=" zy-xs-hide zy-xs-hide" href="http://storage.liyuans.com/?dir=05.%E9%9F%B3%E4%B9%90%2F%E6%A9%98%E7%BA%B8%2Fblog">Contact</a>
-                    <span class="divider zy-xs-hide">/</span>
-                    <span class="zy-xs-hide">picture</span>
+                    @for (int i = 0; i < querys.Count; i++)
+                    {
+                        var query = "";
+                        for (int j = 0; j <= i; j++)
+                        {
+                            query += "/" + querys[j].ToUrlEncodeAndFormatter();
+                        }
+                        <span class="divider zy-xs-hide"> > </span>
+                        if (i == querys.Count - 1)
+                        {
+                            <span class="zy-xs-hide">@(querys[querys.Count - 1])</span>
+                        }
+                        else
+                        {
+                            <a class="zy-xs-hide" href="/?dir=@(query)">@(querys[i])</a>
+                        }
+                    }
                 </p>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav zy-bg-hide">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    @for (int i = 0; i < querys.Count; i++)
+                    {
+                        var query = "";
+                        for (int j = 0; j <= i; j++)
+                        {
+                            query += "/" + querys[j];
+                        }
+                        if (i == querys.Count - 1)
+                        {
+                            <li><a>@(querys[i])</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="/?dir=@(query)">@(querys[i])</a></li>
+                        }
+                    }
                 </ul>
             </div>
         </div>
     </nav>
     <div class="container body-content">
         @RenderBody()
+
         <hr />
         <footer>
-            <p>&copy; 2018 - 只为资源站</p>
+            <p>&copy; @(DateTime.Now.Year) - @(ConfigSettings.SiteName)</p>
         </footer>
     </div>
 
@@ -75,7 +108,5 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-
-    @RenderSection("Scripts", required: false)
 </body>
 </html>
