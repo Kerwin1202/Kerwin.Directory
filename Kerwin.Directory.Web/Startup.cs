@@ -4,6 +4,7 @@ using Kerwin.Directory.Web.Models;
 using Kerwin.Directory.Web.Models.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,6 +67,7 @@ namespace Kerwin.Directory.Web
 
         private void OnPrepareResponse(StaticFileResponseContext staticFileResponseContext)
         {
+            var isLogin = staticFileResponseContext.Context.Session.GetInt32("islogin") == 1;
             var filePath = staticFileResponseContext.File.PhysicalPath;
 
             var token = staticFileResponseContext.Context.Request.Query.ContainsKey("token")
@@ -81,7 +83,7 @@ namespace Kerwin.Directory.Web
             {
                 //有权限下载
             }
-            else if (!AppSettings.AllowAccessPath(filePath, out var needPwd))
+            else if (!isLogin && !AppSettings.AllowAccessPath(filePath, out var needPwd))
             {
                 //需要密码
                 staticFileResponseContext.Context.Response.Redirect("/?dir=" + virtualPath);

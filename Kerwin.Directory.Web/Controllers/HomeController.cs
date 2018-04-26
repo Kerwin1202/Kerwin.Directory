@@ -17,10 +17,35 @@ namespace Kerwin.Directory.Web.Controllers
 {
     public class HomeController : Controller
     {
+        /// <summary>
+        /// 是否登陆
+        /// </summary>
+        private bool IsLogin => HttpContext.Session.GetInt32("islogin") == 1;
 
         [Route("")]
-        public IActionResult Index(string dir, string password)
+        [Route("login")]
+        public IActionResult Index(string dir, string accessPassword, string name, string password)
         {
+            #region login
+            if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(password))
+            {
+                if (ConfigSettings.UserName == name && ConfigSettings.Password == password)
+                {
+                    HttpContext.Session.SetInt32("islogin", 1);
+                    return Redirect("/");
+                }
+                else
+                {
+                    ViewBag.Name = name;
+                }
+            }
+            if (Request.Path == "/login")
+            {
+                ViewBag.GotoLogin = true;
+            }
+            ViewBag.IsLogin = IsLogin;
+            #endregion
+
             var rootDir = ConfigSettings.RootDir;
             var baseVirtualDir = dir ?? "";
             var baseDir = Path.Combine(rootDir, baseVirtualDir.TrimLine());
@@ -37,9 +62,10 @@ namespace Kerwin.Directory.Web.Controllers
                 ? new List<string>() { }
                 : JsonConvert.DeserializeObject<List<string>>(dic);
 
-            if (!AppSettings.AllowAccessPath(baseDir, out var needPwd, password, aap))
+            bool needPwd = false;
+            if (!IsLogin && !AppSettings.AllowAccessPath(baseDir, out needPwd, accessPassword, aap))
             {
-                ViewBag.Msg = string.IsNullOrWhiteSpace(password) ? "" : "密码错误~~~";
+                ViewBag.Msg = string.IsNullOrWhiteSpace(accessPassword) ? "" : "密码错误~~~";
                 return View("NeedPassword");
             }
 
@@ -75,13 +101,16 @@ namespace Kerwin.Directory.Web.Controllers
                 {
                     continue;
                 }
+
+                var vpp = d.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase).ToUrlEncodeAndFormatter();
                 fms.Add(new FileInfoModel()
                 {
                     FileName = d.Name,
                     FileType = FileType.Directory,
                     LastModifiedTime = d.LastWriteTime,
                     Icon = "icon-wenjianjia",
-                    FileVirtualPath = d.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase).ToUrlEncodeAndFormatter()
+                    FileVirtualPath = vpp,
+                    IsLock = ConfigSettings.PasswordAccessPaths.ContainsKey(vpp)
                 });
             }
 
@@ -91,6 +120,7 @@ namespace Kerwin.Directory.Web.Controllers
                 {
                     continue;
                 }
+                var vpp = file.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase).ToUrlEncodeAndFormatter();
                 fms.Add(new FileInfoModel()
                 {
                     FileName = file.Name,
@@ -98,7 +128,8 @@ namespace Kerwin.Directory.Web.Controllers
                     LastModifiedTime = file.LastWriteTime,
                     Size = file.Length,
                     Icon = file.Name.ToIcon(),
-                    FileVirtualPath = file.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase).ToUrlEncodeAndFormatter()
+                    FileVirtualPath = vpp,
+                    IsLock = ConfigSettings.PasswordAccessPaths.ContainsKey(vpp)
                 });
             }
 
@@ -119,9 +150,35 @@ namespace Kerwin.Directory.Web.Controllers
             return View(fms);
         }
 
-        public IActionResult Error()
+        /// <summary>
+        /// 设置密码
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="pwdforpath"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("setpwd")]
+        public IActionResult SetPwd(string path, string pwdforpath)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (!IsLogin) return Redirect("/login");
+            if (string.IsNullOrWhiteSpace(pwdforpath) || string.IsNullOrWhiteSpace(path))return Json(false);
+            ConfigSettings.PasswordAccessPaths.Add(path, pwdforpath);
+            return Json(true);
         }
+        /// <summary>
+        /// 设置密码
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("removepwd")]
+        public IActionResult RemovePwd(string path)
+        {
+            if (!IsLogin) return Redirect("/login");
+            if (string.IsNullOrWhiteSpace(path)) return Json(false);
+            ConfigSettings.PasswordAccessPaths.Remove(path);
+            return Json(true);
+        }
+
     }
 }

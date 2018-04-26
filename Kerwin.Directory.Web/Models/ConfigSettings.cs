@@ -22,6 +22,7 @@ namespace Kerwin.Directory.Web.Models
         public static string SiteName => "只为资源站";
 
         /// <summary>
+        /// The directory of the download file request is only useful for static files, if the download directory is not valid
         /// 下载文件请求的目录  只对静态文件有用,,如果是下载目录此设置无效
         /// </summary>
         public static string DownloadRequestVirtualDir { get; set; } = "static";
@@ -74,7 +75,7 @@ namespace Kerwin.Directory.Web.Models
 
         /// <summary>
         /// When this is not empty all directories or files require password access, Highest priority  PasswordAccessPaths Is invalid
-        /// 如果不为空 则所有访问都需要密码 优先级最高 PasswordAccessPaths 则无效
+        /// 如果不为空 则所有访问都需要密码  相当于私人网盘了.. 优先级最高 PasswordAccessPaths 则无效  
         /// </summary>
         public static string PasswordForAccess { get; set; } = "";
 
@@ -87,12 +88,20 @@ namespace Kerwin.Directory.Web.Models
             //{"/desktop","123456" },
             //{"/Projects/Kerwin","456" }, //两个密码无法相互访问
             //{"/Projects","123" },
-            //{"/server/projects/dll","123654" }
+            //{"/server/projects/dll","123654" },
+            //{"/works/Resource_2017_01_24.zip","123654" }
         };
 
-        //public static string Name { get; set; } = "admin";
-
-        //public static string Password { get; set; } = "123456";
+        /// <summary>
+        /// UserName for set access password
+        /// 设置访问密码的账号
+        /// </summary>
+        public static string UserName { get; set; } = "admin";
+        /// <summary>
+        /// The password set for access password
+        /// 设置访问密码的密码
+        /// </summary>
+        public static string Password { get; set; } = "123456";
 
         ///// <summary>
         ///// 是否允许上传
@@ -100,16 +109,19 @@ namespace Kerwin.Directory.Web.Models
         //public static bool UploadEnabled { get; set; } = false;
 
         /// <summary>
+        /// Whether to display the announcement
         /// 是否显示公告
         /// </summary>
         public static bool IsShowAnnouncement { get; set; } = true;
 
         /// <summary>
+        /// Generated Download Links Download Expiration Time
         /// 生成的下载链接下载过期时间
         /// </summary>
         public static int ShareDownloadExpiredMin { get; set; } = 30;
 
         /// <summary>
+        /// Downloading the encrypted salt is mainly used to produce the salt used in the download link expiration time.
         /// 下载加密的盐 主要是生产下载链接过期时间所用的盐 需要修改，否则人人一样
         /// </summary>
         public static string DownloadTokenSalt { get; set; } = "Kerwin.Directory";

@@ -15,6 +15,8 @@ namespace Kerwin.Directory.Web.Models.Utils
         public string Icon { get; set; } = "icon-geshi_weizhi";
 
         public string FileVirtualPath { get; set; }
+
+        public bool IsLock { get; set; }
     }
 
 

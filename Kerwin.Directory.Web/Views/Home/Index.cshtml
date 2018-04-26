@@ -91,7 +91,170 @@
                         </div>
                     </div>
                 </a>
+                @if (fileInfo.IsLock)
+                {
+                    <i title="需要密码访问" data-path="@(fileInfo.FileVirtualPath)" class="iconfont icon-lock"></i>
+                }
+                else if (ViewBag.IsLogin ?? false)
+                {
+                    <i title="进行该目录设置密码" data-path="@(fileInfo.FileVirtualPath)" class="iconfont icon-lock1"></i>
+                }
             </li>
         }
     </ul>
 </div>
+@if (ViewBag.GotoLogin ?? false)
+{
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">欢迎登录~~</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrWhiteSpace(ViewBag.Name))
+                    {
+                        <p class="bg-danger" style="text-align: center;padding: 6px;border-radius: 6px;">账号密码错误</p>
+                    }
+                    <form id="loginForm" action="" method="post">
+                        <div class="form-group">
+                            <label for="name">账号:</label>
+                            <input type="text" class="form-control" id="name" name="name" value="@(ViewBag.Name)" autofocus="autofocus">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码:</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                        <button type="submit" class="hide">立即登录</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-secondary" data-dismiss="modal">登陆</button>*@
+                    <button type="button" id="btnLogin" class="btn btn-primary">立即登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (ViewBag.IsLogin ?? false)
+{
+    <!-- Set Path Access Password Modal -->
+    <div class="modal fade" id="setPwdModal" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">设置密码</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">路径:</label>
+                        <input type="text" class="form-control" id="path" name="path" value="" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码:</label>
+                        <input type="text" class="form-control" id="pwdforpath" name="pwdforpath">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">以后再说</button>
+                    <button type="button" id="btnSetPwd" class="btn btn-primary">设置密码</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Remove Path Access Password Modal -->
+    <div class="modal fade" id="removePwdModal" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">取消密码</h4>
+                </div>
+                <div class="modal-body">
+                    <p>路径：【<span id="showpath">/Projects/Visual_Studio_Extensions?</span>】</p>
+                    <p>你确定要取消当前选中路径的密码么?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">我再想想</button>
+                    <button type="button" id="btnRemovePwd" class="btn btn-primary">立即取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+    @if (ViewBag.GotoLogin ?? false)
+    {
+        <script>
+            $(document).ready(function () {
+                $('#loginModal').modal('show');
+                 setTimeout(function() {
+                     $("#name").focus();
+                },300);
+                $("#btnLogin").click(function () {
+                    $('#loginForm').submit();
+                });
+            });
+        </script>
+    }
+    else if (ViewBag.IsLogin ?? false)
+    {
+        <script>
+            $(document).ready(function () {
+                $(".icon-lock").click(function () {
+                    $("#showpath").text($(this).data("path"));
+                    $("#removePwdModal").modal("show");
+                });
+                $(".icon-lock1").click(function () {
+                    $("#path").val($(this).data("path"));
+                    $("#setPwdModal").modal("show");
+                    setTimeout(function() {
+                            $("#pwdforpath").focus();
+                    }, 300);
+                });
+                $("#btnSetPwd").click(function() {
+                    var path = $("#path").val();
+                    var pwdforpath = $("#pwdforpath").val();
+                    if (!path) {
+                        $("#path").focus();
+                        return;
+                    }
+                    if (!pwdforpath) {
+                        $("#pwdforpath").focus();
+                        return;
+                    }
+                    $.ajax({
+                        url: '/setpwd',
+                        type: 'post',
+                        data: { path, pwdforpath},
+                        success: function (msg) {
+                            $("#setPwdModal").modal("hide");
+                            location.reload();
+                        }
+                    });
+                });
+                $("#btnRemovePwd").click(function () {
+                    var path = $("#showpath").text();
+                    if (!pwdforpath) {
+                        alert("路径呢...");
+                        return;
+                    }
+                    $.ajax({
+                        url: '/removepwd',
+                        type: 'post',
+                        data: { path},
+                        success: function (msg) {
+                            $("#removePwdModal").modal("hide");
+                            location.reload();
+                        }
+                    });
+                });
+            });
+        </script>
+    }
+}

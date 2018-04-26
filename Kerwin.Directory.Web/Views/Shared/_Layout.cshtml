@@ -37,7 +37,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <p class="navbar-text">
-                    <a asp-area="" asp-controller="Home" asp-action="Index">只为资源站</a>
+                    <a href="/">@(ConfigSettings.SiteName)</a>
                     @for (int i = 0; i < querys.Count; i++)
                     {
                         var query = "";
@@ -85,6 +85,7 @@
         <hr />
         <footer>
             <p>&copy; @(DateTime.Now.Year) - @(ConfigSettings.SiteName)</p>
+            <p>Power by <a target="_blank" href="https://www.zhanghuanglong.com/detail/directory-browsing-kerwin-directory">Kerwin Directory</a> - 1.0.1</p>
         </footer>
     </div>
 
@@ -108,5 +109,6 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
+    @RenderSection("Scripts", false)
 </body>
 </html>

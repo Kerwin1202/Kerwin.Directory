@@ -50,6 +50,7 @@ body {
     margin: 0px;
     padding: 0px;
     margin-top: 15px;
+    margin-right: 20px;
 }
 
 .zy-fi-fn {
@@ -67,11 +68,12 @@ li {
 .zy-main .zy-link:not(:first-child) {
     transition: .2s ease;
     border-radius: 3px;
+    position: relative;
 }
 
     .zy-main .zy-link:not(:first-child):hover {
         background-color: #e0e0e0;
-        transform: scale(1.01);
+        /*transform: scale(1.01);*/
         box-shadow: -1px 1px 4px #eee;
         /*opacity:0;*/
     }
@@ -110,6 +112,19 @@ footer {
     border-radius: 5%;
     padding: 10px 10px;
     text-align: center;
+}
+
+
+/* login */
+.modal-dialog-centered {
+    margin-top: 10%;
+}
+
+.iconfont.icon-lock, .iconfont.icon-lock1 {
+    position: absolute;
+    right: -20px;
+    top: 8px;
+    cursor: pointer;
 }
 
 
