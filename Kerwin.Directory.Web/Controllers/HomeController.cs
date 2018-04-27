@@ -6,12 +6,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Kerwin.Directory.Web.Models;
 using Kerwin.Directory.Web.Models.Utils;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using QRCoder;
 
 namespace Kerwin.Directory.Web.Controllers
 {
@@ -161,7 +164,7 @@ namespace Kerwin.Directory.Web.Controllers
         public IActionResult SetPwd(string path, string pwdforpath)
         {
             if (!IsLogin) return Redirect("/login");
-            if (string.IsNullOrWhiteSpace(pwdforpath) || string.IsNullOrWhiteSpace(path))return Json(false);
+            if (string.IsNullOrWhiteSpace(pwdforpath) || string.IsNullOrWhiteSpace(path)) return Json(false);
             ConfigSettings.PasswordAccessPaths.Add(path, pwdforpath);
             return Json(true);
         }
@@ -178,6 +181,19 @@ namespace Kerwin.Directory.Web.Controllers
             if (string.IsNullOrWhiteSpace(path)) return Json(false);
             ConfigSettings.PasswordAccessPaths.Remove(path);
             return Json(true);
+        }
+
+
+        [Route("qrcode")]
+        public FileResult QrCode()
+        {
+            PayloadGenerator.Url generator = new PayloadGenerator.Url(Request.Headers.ContainsKey("referer") ? Request.Headers["referer"][0] : Request.GetUri().ToString());
+            string payload = generator.ToString();
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
+            BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
+            byte[] qrCodeAsBitmapByteArr = qrCode.GetGraphic(5);
+            return File(qrCodeAsBitmapByteArr, "image/png");
         }
 
     }

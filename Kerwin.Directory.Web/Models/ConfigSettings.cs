@@ -115,6 +115,12 @@ namespace Kerwin.Directory.Web.Models
         public static bool IsShowAnnouncement { get; set; } = true;
 
         /// <summary>
+        /// Announcement Content
+        /// 公告内容
+        /// </summary>
+        public static string AnnouncementContent { get; set; } = "加密密码<code> kerwin.cn </code>!";
+
+        /// <summary>
         /// Generated Download Links Download Expiration Time
         /// 生成的下载链接下载过期时间
         /// </summary>

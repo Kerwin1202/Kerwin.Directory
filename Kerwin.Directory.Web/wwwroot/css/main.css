@@ -114,7 +114,13 @@ footer {
     text-align: center;
 }
 
-
+.icon-qrcode {
+    cursor: pointer;
+    margin-left: 30px;
+}
+#qrcode {
+    width: 250px;
+}
 /* login */
 .modal-dialog-centered {
     margin-top: 10%;

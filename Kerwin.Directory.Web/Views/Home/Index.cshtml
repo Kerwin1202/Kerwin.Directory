@@ -10,7 +10,13 @@
     @if (ConfigSettings.IsShowAnnouncement)
     {
         <div class="zy-announcement">
-            <p style="margin: 0;"><strong>公告：</strong>加密密码<code> kerwin.cn </code>!</p>
+            <p style="margin: 0;"><strong>公告：</strong>@Html.Raw(ConfigSettings.AnnouncementContent)<i class="iconfont icon-qrcode"></i></p>
+        </div>
+    }
+    else
+    {
+        <div class="zy-announcement">
+            <p style="margin: 0;"><i class="iconfont icon-qrcode"></i></p>
         </div>
     }
     <ul class="zy-fi-list">
@@ -187,15 +193,26 @@
         </div>
     </div>
 }
+
+<!-- Show Qrcode Modal -->
+<div class="modal fade" id="showQrcodeModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align: center;">
+                <img id="qrcode" src="@(ViewBag.QrCode)" />
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts{
     @if (ViewBag.GotoLogin ?? false)
     {
         <script>
             $(document).ready(function () {
                 $('#loginModal').modal('show');
-                 setTimeout(function() {
-                     $("#name").focus();
-                },300);
+                setTimeout(function () {
+                    $("#name").focus();
+                }, 300);
                 $("#btnLogin").click(function () {
                     $('#loginForm').submit();
                 });
@@ -213,11 +230,11 @@
                 $(".icon-lock1").click(function () {
                     $("#path").val($(this).data("path"));
                     $("#setPwdModal").modal("show");
-                    setTimeout(function() {
-                            $("#pwdforpath").focus();
+                    setTimeout(function () {
+                        $("#pwdforpath").focus();
                     }, 300);
                 });
-                $("#btnSetPwd").click(function() {
+                $("#btnSetPwd").click(function () {
                     var path = $("#path").val();
                     var pwdforpath = $("#pwdforpath").val();
                     if (!path) {
@@ -231,7 +248,7 @@
                     $.ajax({
                         url: '/setpwd',
                         type: 'post',
-                        data: { path, pwdforpath},
+                        data: { path, pwdforpath },
                         success: function (msg) {
                             $("#setPwdModal").modal("hide");
                             location.reload();
@@ -247,7 +264,7 @@
                     $.ajax({
                         url: '/removepwd',
                         type: 'post',
-                        data: { path},
+                        data: { path },
                         success: function (msg) {
                             $("#removePwdModal").modal("hide");
                             location.reload();
@@ -257,4 +274,10 @@
             });
         </script>
     }
+    <script>
+        $(".icon-qrcode").click(function () {
+            $("#showQrcodeModal").modal("show");
+            $("#qrcode").attr("src", "/qrcode");
+        })
+    </script>
 }
