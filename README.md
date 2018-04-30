@@ -1,12 +1,15 @@
 # Kerwin Directory
 
-Kerwin Directory 是一个开源的目录管理工具.
+Kerwin Directory 是一个轻量级的开源的目录管理工具.
 
 先来预览一波~~ 
 
 [http://img.zhanghuanglong.com//image/2018/04/14/20180414213357973963.png](http://img.zhanghuanglong.com//image/2018/04/14/20180414213357973963.png)
 
-没错是跟`directory lister`差不多，我就是按照这个写的，看了一下`directory lister`没有对某个目录或者某个文件加密的操作，所以就想自己写个
+## 功能
+* 支持二维码扫描
+* 支持远程设置目录访问密码
+* 支持跨平台
 
 
 ## Windows部署
@@ -17,7 +20,9 @@ Kerwin Directory 是一个开源的目录管理工具.
 
 [https://git.kerwin.cn/Kerwin/Kerwin.Directory](https://git.kerwin.cn/Kerwin/Kerwin.Directory)
 
-ConfigSettings.cs 文件是配置文件，自行修改，
+如果是下载源码 则修改`config/config.ini`的配置文件即可
+
+<mark>主要注意的是，首次运行之后，则配置文件位置移动到了 `/Kerwin.Directory/Kerwin.Directory.Web/bin/Release/config/config.ini` 中</mark>
 
 ### IIS部署
 1. 安装IIS：`开始-->windows系统-->控制面板-->程序-->启用或关闭windows功能`，勾选`Internet Information Services`下的所有，点击确认开始安装IIS
@@ -130,23 +135,16 @@ root@ubuntu:~/Kerwin.Directory# sudo nginx -s reload
 
 ```
 
-* 修改站点配置文件 这个是配置文件所有配置都在里面 有些配置被注释,代表未实现
+* 修改站点配置文件  根据ini配置文件注释进行修改 
+
+<mark>主要注意的是，首次运行之后，则配置文件位置移动到了 `/Kerwin.Directory/Kerwin.Directory.Web/bin/Release/config/config.ini` 中</mark>
 
 ```
-root@ubuntu:~/Kerwin.Directory# cd Kerwin.Directory.Web/Models/
-root@ubuntu:~/Kerwin.Directory/Kerwin.Directory.Web/Models# nano ConfigSettings.cs 
+root@ubuntu:~/Kerwin.Directory# cd Kerwin.Directory.Web/config/
+root@ubuntu:~/Kerwin.Directory/Kerwin.Directory.Web/Models# nano config.ini
 
 ```
 
-其他可以不修改，也可以按照注释修改，文件中的这个必须要修改把 `h:\`修改为想要监听的根目录即可 例如 `/root/`
-
-```
-/// <summary>
-/// Root dir
-/// 根目录 实际文件所在的目录
-/// </summary>
-public static string RootDir { get; set; } = @"h:\";
-```
 
 * 运行
 
