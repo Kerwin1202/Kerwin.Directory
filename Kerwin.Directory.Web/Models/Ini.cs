@@ -45,7 +45,7 @@ public class Ini
         {
             var line = l.text;
 
-            if (line.StartsWith(";") || string.IsNullOrWhiteSpace(line))
+            if (line.StartsWith(";") || string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
             {
                 currentSection.Add(";" + l.idx.ToString(), line);
                 continue;
@@ -121,7 +121,7 @@ public class Ini
 
             foreach (var keyValue in section.Value)
             {
-                if (keyValue.Key.StartsWith(";"))
+                if (keyValue.Key.StartsWith(";") || keyValue.Key.StartsWith("#"))
                 {
                     sb.Append(keyValue.Value);
                     sb.AppendLine();

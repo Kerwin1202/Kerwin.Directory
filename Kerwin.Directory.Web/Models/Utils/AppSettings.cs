@@ -143,6 +143,11 @@ namespace Kerwin.Directory.Web.Models.Utils
         /// <returns></returns>
         private static bool IsNeedPassword(string filePath, out string passwordPath)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                passwordPath = filePath;
+                return false;
+            }
             var dir = (Path.GetDirectoryName(filePath) ?? "").ToDirFormatter();
             passwordPath = dir;
             if (string.IsNullOrWhiteSpace(dir))

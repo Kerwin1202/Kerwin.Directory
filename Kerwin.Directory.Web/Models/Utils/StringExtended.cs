@@ -19,7 +19,8 @@ namespace Kerwin.Directory.Web.Models.Utils
         public static string ToVirtualPath(this string filePath, string rootDir)
         {
             // \转为/方便linux和windows互转
-            return filePath.Replace(rootDir.TrimEnd('\\').TrimEnd('/'), "").ToDirFormatter();
+            var vp= filePath.Replace(rootDir.TrimEnd('\\').TrimEnd('/'), "").ToDirFormatter();
+            return string.IsNullOrWhiteSpace(vp) ? "/" : vp;
         }
 
         /// <summary>
