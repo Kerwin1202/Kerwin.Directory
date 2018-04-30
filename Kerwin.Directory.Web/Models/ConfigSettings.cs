@@ -13,26 +13,28 @@ namespace Kerwin.Directory.Web.Models
         {
             IniConfigPath.ExistsFile(true);
 
-            RootDir = IniConfigPath.ReadIniStringValue("Common", "RootDir", @"d:\");
-            SiteName = IniConfigPath.ReadIniStringValue("Common", "SiteName", "只为资源站");
-            DownloadRequestVirtualDir = IniConfigPath.ReadIniStringValue("Common", "DownloadRequestVirtualDir", "static");
-            DateFormatter = IniConfigPath.ReadIniStringValue("Common", "DateFormatter", "yyyy-MM-dd HH:mm:ss");
-            IsShowHidden = IniConfigPath.ReadIniStringValue("Common", "IsShowHidden", "false").ToBool();
-            HiddenFileRules = IniConfigPath.ReadIniStringValue("Common", "HiddenFileRules", "[]").DeserializeByJson<List<string>>() ?? new List<string>();
-            PasswordForAccess = IniConfigPath.ReadIniStringValue("Common", "PasswordForAccess", "");
-            UserName = IniConfigPath.ReadIniStringValue("Common", "UserName", "admin");
-            Password = IniConfigPath.ReadIniStringValue("Common", "Password", "123456");
-            IsShowAnnouncement = IniConfigPath.ReadIniStringValue("Common", "IsShowAnnouncement", "true").ToBool(true);
-            AnnouncementContent = IniConfigPath.ReadIniStringValue("Common", "AnnouncementContent", "加密密码<code> kerwin.cn </code>!");
-            ShareDownloadExpiredMin = IniConfigPath.ReadIniStringValue("Common", "ShareDownloadExpiredMin", "30").ToInt32(30);
-            DownloadTokenSalt = IniConfigPath.ReadIniStringValue("Common", "DownloadTokenSalt", "Kerwin.Directory");
+            var ini = new Ini(IniConfigPath);
+
+            RootDir = ini.GetValue("RootDir", "Common", @"d:\");
+            SiteName = ini.GetValue("SiteName", "Common", "只为资源站");
+            DownloadRequestVirtualDir = ini.GetValue("DownloadRequestVirtualDir", "Common", "static");
+            DateFormatter = ini.GetValue("DateFormatter", "Common", "yyyy-MM-dd HH:mm:ss");
+            IsShowHidden = ini.GetValue("IsShowHidden", "Common", "false").ToBool();
+            HiddenFileRules = ini.GetValue("HiddenFileRules", "Common", "[]").DeserializeByJson<List<string>>() ?? new List<string>();
+            PasswordForAccess = ini.GetValue("PasswordForAccess", "Common", "");
+            UserName = ini.GetValue("UserName", "Common", "admin");
+            Password = ini.GetValue("Password", "Common", "123456");
+            IsShowAnnouncement = ini.GetValue("IsShowAnnouncement", "Common", "true").ToBool(true);
+            AnnouncementContent = ini.GetValue("AnnouncementContent", "Common", "加密密码<code> kerwin.cn </code>!");
+            ShareDownloadExpiredMin = ini.GetValue("ShareDownloadExpiredMin", "Common", "30").ToInt32(30);
+            DownloadTokenSalt = ini.GetValue("DownloadTokenSalt", "Common", "Kerwin.Directory");
 
 
-            PasswordKey = IniConfigPath.ReadIniStringValue("Common", "PasswordKey", "Kerwin.Directory");
-            PasswordIv = IniConfigPath.ReadIniStringValue("Common", "PasswordIv", "Kerwin.Directory");
+            PasswordKey = ini.GetValue("PasswordKey", "Common", "Kerwin.Directory");
+            PasswordIv = ini.GetValue("PasswordIv", "Common", "Kerwin.Directory");
 
 
-            var paps = IniConfigPath.ReadIniStringValue("Common", "PasswordAccessPaths", "", 1024 * 5024);//5M大小,暂时就这么的把
+            var paps = ini.GetValue("PasswordAccessPaths", "Common");
             if (!paps.IsNullOrWhiteSpace())
             {
                 PasswordAccessPaths = paps.ToAesDecrypt(PasswordKey, PasswordIv).DeserializeByJson<Dictionary<string, string>>() ?? new Dictionary<string, string>();
@@ -60,7 +62,9 @@ namespace Kerwin.Directory.Web.Models
         }
         public static void SavePwd()
         {
-            IniConfigPath.WriteIni("Common", "PasswordAccessPaths", PasswordAccessPaths.SerializeByJson().ToAesEncrypt(PasswordKey, PasswordIv));
+            var ini = new Ini(IniConfigPath);
+            ini.WriteValue("PasswordAccessPaths", "Common", PasswordAccessPaths.SerializeByJson().ToAesEncrypt(PasswordKey, PasswordIv));
+            ini.Save();
         }
 
 
