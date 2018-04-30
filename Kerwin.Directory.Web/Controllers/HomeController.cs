@@ -165,7 +165,7 @@ namespace Kerwin.Directory.Web.Controllers
         {
             if (!IsLogin) return Redirect("/login");
             if (string.IsNullOrWhiteSpace(pwdforpath) || string.IsNullOrWhiteSpace(path)) return Json(false);
-            ConfigSettings.PasswordAccessPaths.Add(path, pwdforpath);
+            path.AddNewPwd(pwdforpath);
             return Json(true);
         }
         /// <summary>
@@ -179,7 +179,7 @@ namespace Kerwin.Directory.Web.Controllers
         {
             if (!IsLogin) return Redirect("/login");
             if (string.IsNullOrWhiteSpace(path)) return Json(false);
-            ConfigSettings.PasswordAccessPaths.Remove(path);
+            path.RemovePwd();
             return Json(true);
         }
 

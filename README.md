@@ -15,7 +15,7 @@ Kerwin Directory 是一个开源的目录管理工具.
 
 源码地址如果访问不了就打开 [Kerwin.Directory](https://git.kerwin.cn/Kerwin/Kerwin.Directory) 或者到[只为小站](https://www.zhanghuanglong.com/)里 Git仓库搜索一下  因为目前这个地址带了端口，改天不高兴就换了 23333
 
-[https://git.kerwin.cn:4443/Kerwin/Kerwin.Directory](https://git.kerwin.cn:4443/Kerwin/Kerwin.Directory)
+[https://git.kerwin.cn/Kerwin/Kerwin.Directory](https://git.kerwin.cn/Kerwin/Kerwin.Directory)
 
 ConfigSettings.cs 文件是配置文件，自行修改，
 
