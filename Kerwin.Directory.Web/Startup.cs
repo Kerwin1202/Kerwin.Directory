@@ -2,6 +2,7 @@
 using System.IO;
 using Kerwin.Directory.Web.Models;
 using Kerwin.Directory.Web.Models.Utils;
+using Kerwin.Utils.Core.StringExtend;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -79,14 +80,22 @@ namespace Kerwin.Directory.Web
 
             var virtualPath = filePath.ToVirtualPath(ConfigSettings.RootDir);
 
-            if (expiredTime >= DateTime.Now && virtualPath.CheckDlToken(expiredTime, token))
+            if (!token.IsNullOrWhiteSpace())
             {
-                //有权限下载
+                if (expiredTime >= DateTime.Now && virtualPath.CheckDlToken(expiredTime, token))
+                {
+                    //有权限下载
+                }
+                else
+                {
+                    //需要密码
+                    staticFileResponseContext.Context.Response.Redirect("/?dir=" + virtualPath.ToUrlEncodeAndFormatter());
+                }
             }
             else if (!isLogin && !AppSettings.AllowAccessPath(filePath, out var needPwd))
             {
                 //需要密码
-                staticFileResponseContext.Context.Response.Redirect("/?dir=" + virtualPath);
+                staticFileResponseContext.Context.Response.Redirect("/?dir=" + virtualPath.ToUrlEncodeAndFormatter());
             }
         }
     }

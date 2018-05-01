@@ -83,7 +83,7 @@ namespace Kerwin.Directory.Web.Controllers
                 if (System.IO.File.Exists(baseDir))
                 {
                     var expiredTime = DateTime.Now.AddMinutes(ConfigSettings.ShareDownloadExpiredMin);
-                    return Redirect($"/{ConfigSettings.DownloadRequestVirtualDir}{baseVirtualDir}?expiredtime={expiredTime:yyyy-MM-dd HH:mm:ss}&token={baseVirtualDir.GenerateDlToken(expiredTime)}");
+                    return Redirect($"/{ConfigSettings.DownloadRequestVirtualDir}{baseVirtualDir.ToUrlEncodeAndFormatter()}?expiredtime={expiredTime:yyyy-MM-dd HH:mm:ss}&token={baseVirtualDir.GenerateDlToken(expiredTime)}");
                 }
                 return Redirect("/");
             }
