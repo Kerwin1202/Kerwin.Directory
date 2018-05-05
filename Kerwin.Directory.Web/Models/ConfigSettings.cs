@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kerwin.Utils.Core.DataFormat;
 using Kerwin.Utils.Core.FileExtend;
 using Kerwin.Utils.Core.Security;
@@ -15,6 +16,7 @@ namespace Kerwin.Directory.Web.Models
 
             var ini = new Ini(IniConfigPath);
 
+            #region 基本配置
             RootDir = ini.GetValue("RootDir", "Common", @"d:\");
             SiteName = ini.GetValue("SiteName", "Common", "只为资源站");
             DownloadRequestVirtualDir = ini.GetValue("DownloadRequestVirtualDir", "Common", "static");
@@ -43,6 +45,15 @@ namespace Kerwin.Directory.Web.Models
             {
                 PasswordAccessPaths = new Dictionary<string, string>();
             }
+            #endregion
+
+            #region Cdn配置
+
+            var aliyunCdnSection = "Cdn";
+            Cdn.CdnEnabled = ini.GetSections().Contains(aliyunCdnSection);
+            Cdn.Domains = ini.GetValue("Domains", aliyunCdnSection, "[]").DeserializeByJson<List<string>>();
+
+            #endregion
         }
 
         private static readonly string IniConfigPath = AppDomain.CurrentDomain.BaseDirectory.Combine("config", "config.ini");
@@ -185,6 +196,23 @@ namespace Kerwin.Directory.Web.Models
         /// 下载加密的盐 主要是生产下载链接过期时间所用的盐 需要修改，否则人人一样
         /// </summary>
         public static string DownloadTokenSalt { get; private set; }
+
+
+        #region cdn
+
+        #region aliyun cdn
+
+        public static class Cdn
+        {
+            public static bool CdnEnabled { get; set; }
+
+            public static List<string> Domains { get; set; }
+        }
+
+
+        #endregion
+
+        #endregion
 
     }
 }

@@ -80,7 +80,11 @@ namespace Kerwin.Directory.Web
 
             var virtualPath = filePath.ToVirtualPath(ConfigSettings.RootDir);
 
-            if (!token.IsNullOrWhiteSpace())
+            if (ConfigSettings.Cdn.CdnEnabled && ConfigSettings.Cdn.Domains.Contains(staticFileResponseContext.Context.Request.Host.ToString().ToLower()))
+            {
+                //cdn回源域名 直接通过
+            }
+            else if (!token.IsNullOrWhiteSpace())
             {
                 if (expiredTime >= DateTime.Now && virtualPath.CheckDlToken(expiredTime, token))
                 {
