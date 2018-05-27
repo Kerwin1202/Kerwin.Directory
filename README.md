@@ -1,10 +1,6 @@
 # Kerwin Directory
 
-Kerwin Directory 是一个轻量级的开源的目录管理工具.
-
-先来预览一波~~ 
-
-[http://img.zhanghuanglong.com//image/2018/04/14/20180414213357973963.png](http://img.zhanghuanglong.com//image/2018/04/14/20180414213357973963.png)
+Kerwin Directory 是一个轻量级的开源的目录管理工具. 演示地址 : [http://dir.kerwin.cn/](http://dir.kerwin.cn/)
 
 ## 功能
 * 支持二维码扫描
