@@ -66,7 +66,7 @@ namespace Kerwin.Directory.Web.Controllers
                 : JsonConvert.DeserializeObject<List<string>>(dic);
 
             bool needPwd = false;
-            if (!IsLogin && !AppSettings.AllowAccessPath(baseDir, out needPwd, accessPassword, aap))
+            if (!IsLogin && !AppSettings.AllowAccessPath(baseDir, out needPwd, accessPassword, aap) && needPwd)
             {
                 ViewBag.Msg = string.IsNullOrWhiteSpace(accessPassword) ? "" : "密码错误~~~";
                 return View("NeedPassword");
@@ -105,14 +105,14 @@ namespace Kerwin.Directory.Web.Controllers
                     continue;
                 }
 
-                var vpp = d.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase).ToUrlEncodeAndFormatter();
+                var vpp = d.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase);
                 fms.Add(new FileInfoModel()
                 {
                     FileName = d.Name,
                     FileType = FileType.Directory,
                     LastModifiedTime = d.LastWriteTime,
                     Icon = "icon-wenjianjia",
-                    FileVirtualPath = vpp,
+                    FileVirtualPath = vpp.ToUrlEncodeAndFormatter(),
                     IsLock = ConfigSettings.PasswordAccessPaths.ContainsKey(vpp)
                 });
             }
@@ -123,7 +123,7 @@ namespace Kerwin.Directory.Web.Controllers
                 {
                     continue;
                 }
-                var vpp = file.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase).ToUrlEncodeAndFormatter();
+                var vpp = file.FullName.Replace(rootDir, "/", StringComparison.OrdinalIgnoreCase);
                 fms.Add(new FileInfoModel()
                 {
                     FileName = file.Name,
@@ -131,7 +131,7 @@ namespace Kerwin.Directory.Web.Controllers
                     LastModifiedTime = file.LastWriteTime,
                     Size = file.Length,
                     Icon = file.Name.ToIcon(),
-                    FileVirtualPath = vpp,
+                    FileVirtualPath = vpp.ToUrlEncodeAndFormatter(),
                     IsLock = ConfigSettings.PasswordAccessPaths.ContainsKey(vpp)
                 });
             }

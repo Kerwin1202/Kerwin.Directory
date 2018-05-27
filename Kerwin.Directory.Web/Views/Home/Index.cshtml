@@ -224,11 +224,11 @@
         <script>
             $(document).ready(function () {
                 $(".icon-lock").click(function () {
-                    $("#showpath").text($(this).data("path"));
+                    $("#showpath").text(decodeURI($(this).data("path")));
                     $("#removePwdModal").modal("show");
                 });
                 $(".icon-lock1").click(function () {
-                    $("#path").val($(this).data("path"));
+                    $("#path").val(decodeURI($(this).data("path")));
                     $("#setPwdModal").modal("show");
                     setTimeout(function () {
                         $("#pwdforpath").focus();
